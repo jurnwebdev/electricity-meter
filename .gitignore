@@ -1,0 +1,17 @@
+# Ignore a specific file
+.openclaude-profile.json
+r
+# Ignore all files with a certain extension
+*.log
+*.tmp
+
+# Ignore a directory
+node_modules/
+dist/
+
+# Ignore files matching a pattern
+build/*
+temp/**/*.js
+
+# Use ! to negate and NOT ignore a file
+!important.log

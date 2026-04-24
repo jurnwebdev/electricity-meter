@@ -1,6 +1,12 @@
 from fastapi import APIRouter
 from datetime import datetime
 from dateutil import parser as date_parser
+import sys
+from pathlib import Path
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent))
+
 from database import (
     get_all_recharges, add_recharge, update_recharge, delete_recharge,
     get_all_usage_logs, add_usage_log, update_usage_log, delete_usage_log

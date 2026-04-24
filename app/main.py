@@ -3,6 +3,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pathlib import Path
+import sys
+
+# Add current directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+
 from database import init_db
 from routes import router
 
