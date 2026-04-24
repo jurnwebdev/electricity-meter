@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Electricity Tracker</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Electricity Meter Tracker</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/recharge.html">Recharge</a>
+                <a href="/history.html" class="active">History</a>
+                <a href="/reports.html">Reports</a>
+            </nav>
+        </header>
+
+        <div class="card">
+            <h2>Event Timeline</h2>
+            <ul class="event-list" id="timeline">
+                <li class="empty-state">No events recorded yet</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/history');
+                const events = await res.json();
+
+                const container = document.getElementById('timeline');
+                if (events.length === 0) {
+                    container.innerHTML = '<li class="empty-state">No events recorded yet</li>';
+                    return;
+                }
+
+                container.innerHTML = events.map(e => `
+                    <li class="event-item">
+                        <span class="event-date">${e.datetime.replace('T', ' ')}</span>
+                        <span class="event-type ${e.type}">${e.type}</span>
+                        <div class="event-details">
+                            <strong>${e.type === 'recharge' ? '+' : ''}${e.units} units</strong>
+                            ${e.type === 'recharge' ? `— $${e.amount}` : `remaining`}
+                            ${e.notes ? ` — ${e.notes}` : ''}
+                        </div>
+                    </li>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load history:', e);
+            }
+        }
+
+        loadHistory();
+    </script>
+</body>
+</html>

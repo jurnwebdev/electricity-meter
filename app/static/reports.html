@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Electricity Tracker</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Electricity Meter Tracker</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/recharge.html">Recharge</a>
+                <a href="/history.html">History</a>
+                <a href="/reports.html" class="active">Reports</a>
+            </nav>
+        </header>
+
+        <div class="card">
+            <h2>Daily Report</h2>
+            <div class="table-wrapper">
+                <table id="daily-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Readings</th>
+                            <th>First Reading</th>
+                            <th>Last Reading</th>
+                            <th>Consumed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="5" class="empty-state">No data yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Hourly Report</h2>
+            <div class="table-wrapper">
+                <table id="hourly-table">
+                    <thead>
+                        <tr>
+                            <th>Date & Hour</th>
+                            <th>Readings</th>
+                            <th>Units</th>
+                            <th>Consumed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="4" class="empty-state">No data yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadDailyReport() {
+            try {
+                const res = await fetch('/api/report/daily');
+                const data = await res.json();
+
+                const tbody = document.querySelector('#daily-table tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No data yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(d => `
+                    <tr>
+                        <td>${d.date}</td>
+                        <td>${d.entries_count}</td>
+                        <td>${d.first_reading}</td>
+                        <td>${d.last_reading}</td>
+                        <td><strong>${d.consumed}</strong></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load daily report:', e);
+            }
+        }
+
+        async function loadHourlyReport() {
+            try {
+                const res = await fetch('/api/report/hourly');
+                const data = await res.json();
+
+                const tbody = document.querySelector('#hourly-table tbody');
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No data yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(h => `
+                    <tr>
+                        <td>${h.datetime}</td>
+                        <td>${h.readings_count}</td>
+                        <td>${h.units.join(', ')}</td>
+                        <td><strong>${h.consumed}</strong></td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load hourly report:', e);
+            }
+        }
+
+        loadDailyReport();
+        loadHourlyReport();
+    </script>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Tracker</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Electricity Meter Tracker</h1>
+            <nav>
+                <a href="/" class="active">Dashboard</a>
+                <a href="/recharge.html">Recharge</a>
+                <a href="/history.html">History</a>
+                <a href="/reports.html">Reports</a>
+            </nav>
+        </header>
+
+        <div class="stats-grid" id="stats">
+            <div class="stat-card">
+                <div class="label">Units Remaining</div>
+                <div class="value" id="units-remaining">--</div>
+                <div class="unit">units</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Daily Average</div>
+                <div class="value" id="daily-avg">--</div>
+                <div class="unit">units/day</div>
+            </div>
+            <div class="stat-card" id="days-card">
+                <div class="label">Days Until Empty</div>
+                <div class="value" id="days-until">--</div>
+                <div class="unit">days</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Cost Per Unit</div>
+                <div class="value" id="cost-unit">--</div>
+                <div class="unit">avg</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Quick Log: Current Units</h2>
+            <form id="usage-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date & Time</label>
+                        <input type="datetime-local" id="usage-datetime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Units Remaining</label>
+                        <input type="number" step="0.01" id="usage-units" placeholder="e.g., 45.50" required>
+                    </div>
+                </div>
+                <button type="submit">Log Reading</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Recent Activity</h2>
+            <ul class="event-list" id="recent-events">
+                <li class="empty-state">No recent activity</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('usage-datetime').value = now.toISOString().slice(0, 16);
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const stats = await res.json();
+
+                document.getElementById('units-remaining').textContent = stats.units_remaining || '--';
+                document.getElementById('daily-avg').textContent = stats.daily_avg || '--';
+                document.getElementById('days-until').textContent = stats.days_until_empty || '--';
+                document.getElementById('cost-unit').textContent = stats.cost_per_unit || '--';
+
+                const daysCard = document.getElementById('days-card');
+                if (stats.days_until_empty !== null) {
+                    if (stats.days_until_empty <= 7) {
+                        daysCard.className = 'stat-card danger';
+                    } else if (stats.days_until_empty <= 14) {
+                        daysCard.className = 'stat-card warning';
+                    } else {
+                        daysCard.className = 'stat-card';
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+        }
+
+        async function loadRecent() {
+            try {
+                const res = await fetch('/api/history');
+                const events = await res.json();
+
+                const container = document.getElementById('recent-events');
+                if (events.length === 0) {
+                    container.innerHTML = '<li class="empty-state">No activity yet. Add a recharge or log your units!</li>';
+                    return;
+                }
+
+                container.innerHTML = events.slice(0, 5).map(e => `
+                    <li class="event-item">
+                        <span class="event-type ${e.type}">${e.type}</span>
+                        <div class="event-details">
+                            <strong>${e.type === 'recharge' ? '+' : ''}${e.units} units</strong>
+                            ${e.type === 'recharge' ? `(${e.amount})` : ''} — ${e.datetime.replace('T', ' ')}
+                        </div>
+                    </li>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load recent:', e);
+            }
+        }
+
+        document.getElementById('usage-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const datetime = document.getElementById('usage-datetime').value;
+            const units = parseFloat(document.getElementById('usage-units').value);
+
+            try {
+                await fetch('/api/usage', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({datetime, units_remaining: units})
+                });
+                document.getElementById('usage-units').value = '';
+                loadStats();
+                loadRecent();
+            } catch (e) {
+                alert('Failed to save reading');
+            }
+        });
+
+        loadStats();
+        loadRecent();
+    </script>
+</body>
+</html>
