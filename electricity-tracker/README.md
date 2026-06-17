@@ -1,6 +1,16 @@
 # Electricity Tracker
 
-A multi-user web app to track electricity consumption, recharges, and costs. Built with Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, and Firebase (Auth + Firestore).
+A multi-user web app to track electricity consumption, recharges, and physical meter readings. Built with Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, and Firebase (Auth + Firestore).
+
+## How it works
+
+The app is designed around **two physical meters + one app-derived value**:
+
+- **Credit meter** (cumulative, never reset) — the physical reading always ticks up as electricity flows through it. The app derives the expected reading and lets you optionally log the actual physical reading to catch drift.
+- **Usage meter** (resettable) — reset to 0 at each top-up. The app derives the expected reading using the same delta.
+- **App units remaining** — the only number you actually have to enter. The app computes how much electricity was consumed since your last entry, and bumps both meter readings by that delta automatically.
+
+After a one-time onboarding, the only daily action is logging "current units remaining." Meter 1 and Meter 2 readings update themselves. Top-ups add units and reset the usage meter reading to 0.
 
 ## Features
 
@@ -83,13 +93,13 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) and sign up.
 
-### 4. Deploy the security rules
+### 4. Deploy the security rules and indexes
 
 ```bash
-firebase deploy --only firestore:rules
+firebase deploy --only firestore:rules,firestore:indexes
 ```
 
-Or paste the contents of `firestore.rules` into the Firebase console under **Firestore → Rules**.
+Or paste the contents of `firestore.rules` and `firestore.indexes.json` into the Firebase console under **Firestore → Rules** and **Firestore → Indexes**.
 
 ## Deploy to Vercel
 
@@ -115,22 +125,26 @@ Or paste the contents of `firestore.rules` into the Firebase console under **Fir
 ## Data model (Firestore)
 
 ```
-users/{uid}                              # User profile doc
+users/{uid}                                 # User profile doc
   email: string
-  defaultRate: number                    # ₦/kWh, used for auto-cost
-  createdAt: Timestamp
+  defaultRate: number
+  meterSetup: {                             # present after dual-meter onboarding
+    creditMeterName: "Credit meter"
+    usageMeterName: "Usage meter"
+    driftThreshold: number                  # kWh; warn if drift exceeds
+    reminderHour: number                    # 0-23, when to email the reminder
+    reminderEmail: string
+  }
+  reminderEnabled: boolean
 
-users/{uid}/entries/{entryId}            # Subcollection
-  type: 'recharge' | 'usage'
-  units: number                          # kWh
-  costNgn: number                        # Naira
-  ratePerKwh: number                     # Snapshot at creation
-  note: string | null
-  entryDate: string                      # YYYY-MM-DD
+users/{uid}/events/{eventId}                # Event log (single source of truth)
+  type: 'onboarding' | 'checkin' | 'recharge' | 'physical_meter' | 'baseline_adjusted'
+  date: string                              # YYYY-MM-DD
   createdAt: Timestamp
+  # (plus type-specific fields — see src/lib/types.ts)
 ```
 
-Security rules ensure users can only read/write their own user document and their own entries subcollection.
+Every dashboard value (units remaining, credit meter reading, usage meter reading, monthly spend, etc.) is **derived** from this event log via `reduceEvents` in `src/lib/calculations.ts`. There is no separate stored state to keep in sync.
 
 ## License
 

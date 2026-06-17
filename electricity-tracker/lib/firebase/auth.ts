@@ -52,6 +52,7 @@ export function useAuthUser(): { user: User | null; loading: boolean } {
 export type AppUser = {
   email: string;
   defaultRate: number;
+  meterSetup?: import("@/lib/types").MeterSetup;
 };
 
 export async function getUserDoc(uid: string): Promise<AppUser | null> {

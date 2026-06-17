@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import type { ReactNode } from "react";
 
 type Tone = "good" | "warn" | "bad" | "neutral";
 
@@ -10,26 +11,39 @@ const toneClass: Record<Tone, string> = {
   neutral: "text-foreground",
 };
 
-type Props = {
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: Tone;
+const toneDot: Record<Tone, string> = {
+  good: "bg-emerald-500",
+  warn: "bg-amber-500",
+  bad: "bg-rose-500",
+  neutral: "bg-muted-foreground/40",
 };
 
-export function StatCard({ label, value, hint, tone = "neutral" }: Props) {
+type Props = {
+  label: string;
+  value: ReactNode;
+  hint?: string;
+  tone?: Tone;
+  icon?: ReactNode;
+  className?: string;
+};
+
+export function StatCard({ label, value, hint, tone = "neutral", icon, className }: Props) {
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className={cn("text-3xl font-semibold tabular-nums tracking-tight", toneClass[tone])}>
+    <Card size="sm" className={cn("shadow-card", className)}>
+      <CardContent className="flex flex-col gap-1.5 py-4">
+        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          {icon ? <span aria-hidden className="text-muted-foreground/80">{icon}</span> : null}
+          <span>{label}</span>
+        </div>
+        <div className={cn("text-2xl font-semibold tabular-nums tracking-tight sm:text-[1.7rem]", toneClass[tone])}>
           {value}
         </div>
-        {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+        {hint ? (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className={cn("size-1.5 rounded-full", toneDot[tone])} aria-hidden />
+            <span>{hint}</span>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   );
