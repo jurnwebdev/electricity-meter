@@ -91,7 +91,7 @@ export function QuickLogRecharge({ uid, events }: Props) {
                   value={units}
                   onChange={(e) => setUnits(e.target.value)}
                   placeholder="88.80"
-                  className="h-11 pr-10 text-base sm:h-10 sm:text-sm"
+                  className="h-11 pr-10 sm:h-10"
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">
                   kWh
@@ -114,7 +114,7 @@ export function QuickLogRecharge({ uid, events }: Props) {
                   value={cost}
                   onChange={(e) => setCost(e.target.value)}
                   placeholder="20000"
-                  className="h-11 pl-7 text-base sm:h-10 sm:text-sm"
+                  className="h-11 pl-7 sm:h-10"
                 />
               </div>
             </div>

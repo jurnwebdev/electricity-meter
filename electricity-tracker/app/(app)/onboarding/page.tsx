@@ -205,7 +205,7 @@ export default function OnboardingPage() {
                       value={credit}
                       onChange={(e) => setCredit(e.target.value)}
                       placeholder="e.g. 1023"
-                      className="h-11 text-base sm:h-10 sm:text-sm"
+                      className="h-11 sm:h-10"
                     />
                     <p className="text-xs text-muted-foreground">
                       The cumulative meter. Never reset.
@@ -223,7 +223,7 @@ export default function OnboardingPage() {
                       value={usage}
                       onChange={(e) => setUsage(e.target.value)}
                       placeholder="e.g. 7.3"
-                      className="h-11 text-base sm:h-10 sm:text-sm"
+                      className="h-11 sm:h-10"
                     />
                     <p className="text-xs text-muted-foreground">
                       The resettable meter since your last top-up.
@@ -241,7 +241,7 @@ export default function OnboardingPage() {
                       value={appRemaining}
                       onChange={(e) => setAppRemaining(e.target.value)}
                       placeholder="e.g. 60"
-                      className="h-11 text-base sm:h-10 sm:text-sm"
+                      className="h-11 sm:h-10"
                     />
                   </div>
                 </div>

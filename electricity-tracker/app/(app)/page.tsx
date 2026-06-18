@@ -51,22 +51,22 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 sm:space-y-10">
       {/* Hero / greeting */}
-      <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-primary/10 via-accent/40 to-background px-5 py-6 shadow-card sm:px-7 sm:py-8">
+      <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-primary/12 via-accent/40 to-background px-5 py-6 shadow-card sm:px-7 sm:py-8">
         <div className="grid-bg pointer-events-none absolute inset-0 opacity-50" aria-hidden />
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              <span className="grid size-7 place-items-center rounded-full bg-primary/15 text-primary">
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/70">
+              <span className="grid size-7 place-items-center rounded-full bg-primary/15 text-sm font-bold text-primary">
                 {userInitial}
               </span>
               <span>Today</span>
             </div>
-            <h1 className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h1 className="font-heading text-balance text-[1.65rem] font-bold leading-[1.15] tracking-tight text-foreground sm:text-3xl">
               {state.appUnitsRemaining > 0
                 ? `${formatUnits(state.appUnitsRemaining)} kWh remaining`
                 : "No units logged yet"}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm font-medium text-foreground/70">
               {days !== null
                 ? `At your current pace, that's about ${formatInteger(days)} more day${days === 1 ? "" : "s"}.`
                 : "Log a few check-ins to see your daily average."}
@@ -75,7 +75,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "rounded-full px-3 py-1 text-xs font-medium",
+                "rounded-full px-3 py-1 text-xs font-semibold",
                 remainingTone === "good" &&
                   "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
                 remainingTone === "warn" &&
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                   ? "Low"
                   : "Critical"}
             </span>
-            <span className="rounded-full bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground ring-1 ring-border/60">
+            <span className="rounded-full bg-background/70 px-3 py-1 text-xs font-semibold text-foreground/80 ring-1 ring-border/60">
               {latestRate > 0 ? formatRate(latestRate) : "No rate yet"}
             </span>
           </div>
@@ -103,6 +103,7 @@ export default function DashboardPage() {
           label="Days left"
           value={formatInteger(days)}
           hint={days === null ? "Need more data" : "30-day average"}
+          tone={days !== null && days < 7 ? "warn" : "neutral"}
         />
         <StatCard
           label="This month"
@@ -126,7 +127,9 @@ export default function DashboardPage() {
           {/* Shared box — top of the action area */}
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Shared meter box</CardTitle>
+              <CardTitle className="font-heading text-lg font-semibold tracking-tight">
+                Shared meter box
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               <SharedBoxCard events={events} />
@@ -137,7 +140,7 @@ export default function DashboardPage() {
           {/* Quick actions — daily essentials */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+              <h2 className="font-heading text-sm font-semibold tracking-tight text-foreground">
                 Quick log
               </h2>
               <Button asChild variant="ghost" size="sm" className="text-xs">
@@ -152,7 +155,7 @@ export default function DashboardPage() {
         </>
       ) : (
         <Card className="shadow-card">
-          <CardContent className="flex flex-col items-start gap-3 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <CardContent className="flex flex-col items-start gap-3 py-8 text-sm font-medium text-foreground/80 sm:flex-row sm:items-center sm:justify-between">
             <p>Finish onboarding to start tracking.</p>
             <Button asChild size="sm">
               <Link href="/onboarding">Continue setup</Link>
@@ -164,7 +167,7 @@ export default function DashboardPage() {
       {/* Recent activity */}
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <h2 className="font-heading text-sm font-semibold tracking-tight text-foreground">
             Recent activity
           </h2>
           <Button asChild variant="ghost" size="sm" className="text-xs">

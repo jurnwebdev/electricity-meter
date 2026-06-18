@@ -102,12 +102,14 @@ export function Nav({ email }: NavProps) {
         >
           <span
             aria-hidden
-            className="grid size-7 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105"
+            className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-105"
           >
-            <BoltIcon className="size-3.5" />
+            <BoltIcon className="size-4" />
           </span>
           <span className="hidden sm:inline">Electricity</span>
-          <span className="text-muted-foreground/60 hidden sm:inline">Tracker</span>
+          <span className="hidden text-muted-foreground/60 sm:inline">
+            Tracker
+          </span>
         </Link>
         <nav className="ml-2 hidden items-center gap-0.5 sm:flex">
           {links.map((link) => {
@@ -119,7 +121,7 @@ export function Nav({ email }: NavProps) {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-sm transition-colors",
+                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                   active
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -136,86 +138,28 @@ export function Nav({ email }: NavProps) {
               {email}
             </span>
           ) : null}
-          <Button variant="outline" size="sm" onClick={handleSignOut} className="hidden sm:inline-flex">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSignOut}
+            className="hidden sm:inline-flex"
+          >
             Sign out
           </Button>
-          <MobileMenu pathname={pathname} email={email} onSignOut={handleSignOut} />
         </div>
       </div>
     </header>
   );
 }
 
-function MobileMenu({
-  pathname,
-  email,
-  onSignOut,
-}: {
-  pathname: string;
-  email: string | null;
-  onSignOut: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div className="sm:hidden">
-      <button
-        type="button"
-        aria-label="Open menu"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className="grid size-9 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-      >
-        <MenuIcon className="size-4" />
-      </button>
-      {open ? (
-        <div className="absolute inset-x-0 top-14 z-30 border-b border-border bg-background/95 px-4 py-3 shadow-elevated backdrop-blur">
-          <nav className="flex flex-col gap-1">
-            {links.map((link) => {
-              const active =
-                pathname === link.href ||
-                (link.href !== "/" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "rounded-md px-3 py-2.5 text-sm font-medium",
-                    active
-                      ? "bg-accent text-accent-foreground"
-                      : "text-foreground/80 hover:bg-muted"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            {email ? (
-              <div className="mt-1 truncate px-3 text-xs text-muted-foreground">
-                {email}
-              </div>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                onSignOut();
-              }}
-              className="mt-1 rounded-md px-3 py-2.5 text-left text-sm font-medium text-foreground/80 hover:bg-muted"
-            >
-              Sign out
-            </button>
-          </nav>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 function BoltIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+    >
       <path
         d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"
         fill="currentColor"
@@ -223,14 +167,6 @@ function BoltIcon({ className }: { className?: string }) {
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
-    </svg>
-  );
-}
-
-function MenuIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={className} aria-hidden>
-      <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
 }

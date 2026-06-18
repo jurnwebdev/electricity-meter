@@ -31,15 +31,15 @@ export function StatCard({ label, value, hint, tone = "neutral", icon, className
   return (
     <Card size="sm" className={cn("shadow-card", className)}>
       <CardContent className="flex flex-col gap-1.5 py-4">
-        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          {icon ? <span aria-hidden className="text-muted-foreground/80">{icon}</span> : null}
+        <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/70">
+          {icon ? <span aria-hidden className="text-foreground/70">{icon}</span> : null}
           <span>{label}</span>
         </div>
-        <div className={cn("text-2xl font-semibold tabular-nums tracking-tight sm:text-[1.7rem]", toneClass[tone])}>
+        <div className={cn("text-2xl font-bold tabular-nums tracking-tight text-foreground sm:text-[1.7rem]", tone !== "neutral" && toneClass[tone])}>
           {value}
         </div>
         {hint ? (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-foreground/65">
             <span className={cn("size-1.5 rounded-full", toneDot[tone])} aria-hidden />
             <span>{hint}</span>
           </div>

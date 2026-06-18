@@ -94,7 +94,7 @@ export function LogUnitsRemaining({ uid, events }: Props) {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="e.g. 55"
-                className="h-11 pr-12 text-base sm:h-10 sm:text-sm"
+                className="h-11 pr-12 sm:h-10"
               />
               <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted-foreground">
                 kWh
